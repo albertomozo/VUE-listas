@@ -1,9 +1,9 @@
 <script setup>
-    import {  ref, defineEmits } from "vue";
+    import {  ref, defineEmits,nextTick } from "vue";
     //const props = defineProps(["onNewItem"]);
     const text = ref("");
     const emits = defineEmits(["onNewItem"]);
-    const MAX = 15;
+    const MAX = 8;
     let quedan = ref(MAX);
 
     function handleKeyDown(evt) {
@@ -12,6 +12,15 @@
             text.value = "";
         }
         quedan = MAX - text.value.length;
+        if (quedan <= 0)
+        {
+            alert('solo puedes escribir '  + MAX + ' caracteres ' + text.value);
+            nextTick(() => {
+                 text.value = text.value.slice(0,MAX);
+
+            }); 
+             
+        }
     }
      
 </script>
