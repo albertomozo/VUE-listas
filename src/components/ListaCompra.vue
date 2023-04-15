@@ -6,6 +6,10 @@
     msg: {
         type: String,
         required: true
+    },
+    tableroId : {
+        type :String,
+        required:true
     }
     })
 
@@ -17,7 +21,7 @@
     function   handleNewItem(texto) {
         console.log('entro enter');
         console.log(texto.value);
-;                if (texto.value !== "" ) {
+;          if (texto.value !== "" ) {
                 lista.push(texto.value);
                 texto.value = "";
                 console.log(lista);
@@ -38,7 +42,33 @@
         }
        
       
-    }     
+    }    
+    
+    function onDrop(evt,board){
+        console.log(board); // id tablero destino 
+        const { boardId, itemId } = JSON.parse(evt.dataTransfer.getData("item")); // 
+        console.log({ boardId, itemId });
+
+        console.log(lista);
+        console.log(lista.boardId);
+        //lista.push(
+
+     /*   const board = tableros.find((tablero) => tablero.id === boardId);
+     const item = board.items.find((item) => item.id === itemId);
+        board.items = board.items.filter((i) => i.id !== item.id);
+        dest.items.push({ ...item }); */
+
+    }
+
+    function startDrag(evt,boardId,itemId) {
+        console.log('start drag');
+        console.log(boardId, itemId);
+        evt.dataTransfer.dropEffect = "move";
+        evt.dataTransfer.effectAllowed = "move";
+        console.log(JSON.stringify({ boardId, itemId }));
+        evt.dataTransfer.setData("item", JSON.stringify({ boardId, itemId }));
+        /* event.dataTransfer.setData("text", event.target.id); */
+    }
     
     
             
@@ -53,8 +83,15 @@
         <InputView @on-new-item="(text) => handleNewItem(text)" />
           
       
-        <div class="tags">
-            <div class="tag" v-for="(producto, index) in lista" :key="index">
+        <div class="tags"
+            @drop="onDrop($event,tableroId)"
+            @dragover.prevent
+            @dragenter.prevent
+        
+        
+        >
+            <div class="tag" v-for="(producto, index) in lista" :key="index" 
+            draggable="true"   @dragstart="startDrag($event, tableroId, index)">
             {{ producto }} <button @click="() => deleteTag(producto)">X</button>
 
             </div>
