@@ -2,29 +2,47 @@
     import {reactive} from 'vue';
     import InputView from './InputView.vue';
 
-    defineProps({
-    msg: {
-        type: String,
-        required: true
-    },
-    tableroId : {
-        type :String,
-        required:true
+    let  tableros = reactive([
+        { id:crypto.randomUUID(), nombre: 'Desayuno',
+            items : [{ id:crypto.randomUUID(), elemento : 'pan'},
+            { id:crypto.randomUUID(), elemento : 'leche'},
+            { id:crypto.randomUUID(), elemento : 'cafe'}
+            ]
+        },
+        { id:crypto.randomUUID(), nombre: 'Primer Plato',
+            items : [{ id:crypto.randomUUID(), elemento : 'sopa'},
+            { id:crypto.randomUUID(), elemento : 'ensalada'},
+            { id:crypto.randomUUID(), elemento : 'arroz'}
+            ]
+        }
+
+    ]);
+
+    if (localStorage.getItem('tableros') !== null) {
+           tableros = JSON.parse(localStorage.getItem('tableros'));
     }
-    })
+
+
+
 
     
-    let  lista = reactive([]);
+    
   
   
   
-    function   handleNewItem(texto) {
-        console.log('entro enter');
-        console.log(texto.value);
+    //function   handleNewItem(texto,tabId,tabNombre) {
+    function   handleNewItem(texto,tablero) {
+        console.log(tablero)
+      
 ;          if (texto.value !== "" ) {
-                lista.push(texto.value);
+               
+    
+                tablero.items.push(
+                  {id:crypto.randomUUID(), elemento : texto.value}  
+               
+                );
                 texto.value = "";
-                console.log(lista);
+                
                 return;
             }
             if (texto.length >= MAX)
@@ -34,11 +52,16 @@
                 return;
             }
     }
-    function deleteTag(text) {
+    function deleteTag(text,tablero) {
        /*  lista = lista.filter((item) => item !== text); */
-        const index = lista.indexOf(text);
+       console.log(tablero.items);
+       console.log(text);
+       // const index = tablero.items.id.indexOf(text);
+        const index = tablero.items.findIndex((item) => item.id === text);
+        console.log(index);
         if (index !== -1) {
-            lista.splice(index, 1);
+            console.log('borrar')
+            tablero.items.splice(index, 1);
         }
        
       
@@ -48,14 +71,15 @@
         console.log(board); // id tablero destino 
         const { boardId, itemId } = JSON.parse(evt.dataTransfer.getData("item")); // 
         console.log({ boardId, itemId });
+        
+        console.log(this.tableros);
+  
 
-        console.log(lista);
-        console.log(lista.boardId);
-        //lista.push(
-
-     /*   const board = tableros.find((tablero) => tablero.id === boardId);
-     const item = board.items.find((item) => item.id === itemId);
-        board.items = board.items.filter((i) => i.id !== item.id);
+        /* const tableroOrigen  = tableros.find((tablero) => tablero.id === boardId);
+        const productoOrigen  = tableroOrigen.items.find((item) => item.id === itemId); 
+        
+        console.log(tableroOrigen.nombre + " " + productoOrigen.items.element) */
+        /* board.items = board.items.filter((i) => i.id !== item.id);
         dest.items.push({ ...item }); */
 
     }
@@ -69,6 +93,25 @@
         evt.dataTransfer.setData("item", JSON.stringify({ boardId, itemId }));
         /* event.dataTransfer.setData("text", event.target.id); */
     }
+
+    function nuevaLista()
+    {
+        const textoLista = prompt('Ingrese el texto de la lista');
+        if (textoLista) {
+            const tablero = {
+                id: crypto.randomUUID(),
+                nombre : textoLista,
+                items : []
+            } 
+            tableros.push(tablero);
+        }  
+    }
+
+    function guardarTablero(){
+        localStorage.setItem('tableros', JSON.stringify(tableros));
+    }
+
+   
     
     
             
@@ -78,24 +121,38 @@
 </script>
 
 <template>
-    <div class="lista">
-        <h1>{{ msg  }}</h1>
-        <InputView @on-new-item="(text) => handleNewItem(text)" />
+<div>
+    <button @click="nuevaLista">Nueva lista</button>
+    <button @click="guardarTablero">Guardar Tableros</button>
+   
+    <div class="lista" v-for="tablero in tableros" >
+        
+      
+
+
+
+
+
+
+        <h1>{{ tablero.nombre  }}</h1>
+        <InputView @onNewItem="(item)=>handleNewItem(item,tablero)" />
           
       
         <div class="tags"
-            @drop="onDrop($event,tableroId)"
+            @drop="onDrop($event,tablero.id)"
             @dragover.prevent
             @dragenter.prevent
         
         
         >
-            <div class="tag" v-for="(producto, index) in lista" :key="index" 
-            draggable="true"   @dragstart="startDrag($event, tableroId, index)">
-            {{ producto }} <button @click="() => deleteTag(producto)">X</button>
+            <div class="tag" v-for="producto in tablero.items" 
+            draggable="true"   @dragstart="startDrag($event, tablero.id, producto.id)">
+            {{ producto.elemento }} <button @click="() => deleteTag(producto.id,tablero)">X</button>
 
             </div>
         </div>
+    </div>
+
     </div>
 
 </template>

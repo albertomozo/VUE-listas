@@ -1,13 +1,13 @@
 <script setup>
-    import {  ref, defineEmits,nextTick } from "vue";
-    //const props = defineProps(["onNewItem"]);
-    const text = ref("");
+    import {  ref, nextTick } from "vue";
     const emits = defineEmits(["onNewItem"]);
+    const text = ref("");
     const MAX = 8;
     let quedan = ref(MAX);
 
     function handleKeyDown(evt) {
         if (evt.key === "Enter") {
+            console.log('emit hijo')
             emits("onNewItem", text);
             text.value = "";
         }
