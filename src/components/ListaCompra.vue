@@ -19,7 +19,7 @@
     ]);
 
     if (localStorage.getItem('tableros') !== null) {
-           tableros = JSON.parse(localStorage.getItem('tableros'));
+           tableros = reactive(JSON.parse(localStorage.getItem('tableros')));
     }
 
 
@@ -68,30 +68,27 @@
     }    
     
     function onDrop(evt,board){
-        console.log(board); // id tablero destino 
+        console.log('ondrop')
         const { boardId, itemId } = JSON.parse(evt.dataTransfer.getData("item")); // 
         console.log({ boardId, itemId });
-        
-        console.log(this.tableros);
-  
-
-        /* const tableroOrigen  = tableros.find((tablero) => tablero.id === boardId);
+        const tableroOrigen  = tableros.find((tablero) => tablero.id === boardId);
         const productoOrigen  = tableroOrigen.items.find((item) => item.id === itemId); 
-        
-        console.log(tableroOrigen.nombre + " " + productoOrigen.items.element) */
-        /* board.items = board.items.filter((i) => i.id !== item.id);
-        dest.items.push({ ...item }); */
+        console.log('nombre ' + tableroOrigen.nombre )
+        console.log('producto '+ productoOrigen.elemento )      
+        tableroOrigen.items = tableroOrigen.items.filter((i) => i.id !== productoOrigen.id);
+        console.log(productoOrigen);
+        console.log(board);
+        board.items.push(productoOrigen);
 
     }
 
     function startDrag(evt,boardId,itemId) {
         console.log('start drag');
-        console.log(boardId, itemId);
         evt.dataTransfer.dropEffect = "move";
         evt.dataTransfer.effectAllowed = "move";
         console.log(JSON.stringify({ boardId, itemId }));
         evt.dataTransfer.setData("item", JSON.stringify({ boardId, itemId }));
-        /* event.dataTransfer.setData("text", event.target.id); */
+        
     }
 
     function nuevaLista()
@@ -126,31 +123,24 @@
     <button @click="guardarTablero">Guardar Tableros</button>
    
     <div class="lista" v-for="tablero in tableros" >
-        
-      
+        <div class="tablero">        
+            <h1>{{ tablero.nombre  }}</h1>
+            <InputView @onNewItem="(item)=>handleNewItem(item,tablero)" />
+            
+            <div class="tags"
+                @drop="onDrop($event,tablero)"
+                @dragover.prevent
+                @dragenter.prevent
+            
+            
+            >
+                <div class="tag" v-for="producto in tablero.items" 
+                draggable="true"   @dragstart="startDrag($event, tablero.id, producto.id)">
+                {{ producto.elemento }} <button @click="() => deleteTag(producto.id,tablero)">X</button>
 
-
-
-
-
-
-        <h1>{{ tablero.nombre  }}</h1>
-        <InputView @onNewItem="(item)=>handleNewItem(item,tablero)" />
-          
-      
-        <div class="tags"
-            @drop="onDrop($event,tablero.id)"
-            @dragover.prevent
-            @dragenter.prevent
-        
-        
-        >
-            <div class="tag" v-for="producto in tablero.items" 
-            draggable="true"   @dragstart="startDrag($event, tablero.id, producto.id)">
-            {{ producto.elemento }} <button @click="() => deleteTag(producto.id,tablero)">X</button>
-
+                </div>
             </div>
-        </div>
+    </div>
     </div>
 
     </div>
@@ -158,13 +148,7 @@
 </template>
 
 <style scoped>
-.lista {
-    margin :5px;
-    border : 1px solid black;
-    padding: 2px 5px;
-    background-color: aquamarine;
 
-}
 
 .tag {
     margin : 1px;
@@ -172,6 +156,30 @@
     border : 1px solid blue;
     background : whitesmoke;
 }
+.lista {
+    
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: start;
+    align-items: auto;
+    align-content: start;
+    margin :5px;
+    border : 1px solid black;
+    padding: 2px 5px;
+    background-color: aquamarine;
+
+
+}
+
+.tablero {
+  flex: 0 0 auto;
+  margin: 10px;
+}
+  
+
+
+
 
 
 </style>
