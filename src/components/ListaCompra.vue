@@ -1,15 +1,31 @@
 <script setup>
     import {reactive} from 'vue';
     import InputView from './InputView.vue';
+    import BotonesTablero from './BotonesTablero.vue';
+    /* import the fontawesome core */
+    import { library } from '@fortawesome/fontawesome-svg-core'
+    /* import font awesome icon component */
+    import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+    /* import specific icons */
+    import { faPenToSquare } from '@fortawesome/free-solid-svg-icons'
+import TableroForm from './TableroForm.vue';
+    /* add icons to the library */
+    library.add(faPenToSquare)
+    
 
+   
     let  tableros = reactive([
-        { id:crypto.randomUUID(), nombre: 'Desayuno',
+        { id:crypto.randomUUID(), 
+            nombre: 'Desayuno',
+            editar : false,
             items : [{ id:crypto.randomUUID(), elemento : 'pan'},
             { id:crypto.randomUUID(), elemento : 'leche'},
             { id:crypto.randomUUID(), elemento : 'cafe'}
             ]
         },
-        { id:crypto.randomUUID(), nombre: 'Primer Plato',
+        { id:crypto.randomUUID(), 
+            nombre: 'Primer Plato',
+            editar : false,   
             items : [{ id:crypto.randomUUID(), elemento : 'sopa'},
             { id:crypto.randomUUID(), elemento : 'ensalada'},
             { id:crypto.randomUUID(), elemento : 'arroz'}
@@ -108,6 +124,11 @@
         localStorage.setItem('tableros', JSON.stringify(tableros));
     }
 
+    function edicionForm(){
+
+
+    }
+
    
     
     
@@ -118,13 +139,18 @@
 </script>
 
 <template>
-<div>
+<div class="contenedor_tableros">
     <button @click="nuevaLista">Nueva lista</button>
-    <button @click="guardarTablero">Guardar Tableros</button>
-   
+    <button>Guardar Tableros</button>
+    <BotonesTablero msg="Guardar Tableros"  @click="guardarTablero"/>
+   <div class="tableros">
     <div class="lista" v-for="tablero in tableros" >
         <div class="tablero">        
-            <h1>{{ tablero.nombre  }}</h1>
+            <h1>{{ tablero.nombre  }} 
+                <font-awesome-icon  icon="fa-solid fa-pen-to-square"  id="formId" style="color: #288649;" @click="tablero.editar = !tablero.editar" />
+            </h1>
+            <TableroForm :tablero="tablero" v-show="tablero.editar" />
+            
             <InputView @onNewItem="(item)=>handleNewItem(item,tablero)" />
             
             <div class="tags"
@@ -140,10 +166,11 @@
 
                 </div>
             </div>
+        </div>
     </div>
-    </div>
+</div>
 
-    </div>
+ </div>
 
 </template>
 
@@ -171,11 +198,25 @@
 
 
 }
-
+.tableros {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: start;
+    align-items: auto;
+    align-content: start;
+    margin :5px;
+    border : 1px solid black;
+    padding: 2px 5px;
+    background-color: rgb(105, 108, 107)38, 232);
+}
 .tablero {
   flex: 0 0 auto;
   margin: 10px;
 }
+
+.contenedor_tableros{
+    width: auto}
   
 
 

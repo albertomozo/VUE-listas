@@ -11,8 +11,8 @@
   <header>
     
     <div class="wrapper">
-     <ListaCompra  />
-     
+      <ListaCompra  />
+
     </div>
   </header>
 
