@@ -1,6 +1,4 @@
 <script setup>
-  import { createApp,reactive } from 'vue';
-  import ListaCompra from './components/ListaCompra.vue';
 
  
 
@@ -9,12 +7,27 @@
 
 <template>
   <header>
+   
+  
+  <nav>
+      <ul>
+        <li>
+            <RouterLink to="/"  active-class="active">Home</RouterLink>
+        </li>
+        <li>
+            <RouterLink to="/tableros"  active-class="active">listas</RouterLink>
+       </li>
+    </ul>
+ </nav>
+ </header>
+ <RouterView />
+<!--   <header>
     
     <div class="wrapper">
-      <ListaCompra  />
+      
 
     </div>
-  </header>
+  </header> -->
 
  
 </template>
@@ -45,5 +58,30 @@ header {
     place-items: flex-start;
     flex-wrap: wrap;
   }
+
+  nav ul {  
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  nav ul li {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+  }
+
+  nav ul li a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  nav ul li a:hover {
+    text-decoration: underline;
+  }
+
+  .active {
+      background-color: aqua;
+  }
+
 
 </style>
