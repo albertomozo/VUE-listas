@@ -6,6 +6,7 @@
 <template>
    <div class="tablero-form">
         <input type="text" v-model="tablero.nombre">
+        <input type="color" v-model="tablero.color">
    </div>
 </template>
 

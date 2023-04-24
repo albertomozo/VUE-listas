@@ -8,9 +8,13 @@
     import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
     /* import specific icons */
     import { faPenToSquare } from '@fortawesome/free-solid-svg-icons'
-import TableroForm from './TableroForm.vue';
+    import { faTrashCan } from '@fortawesome/free-solid-svg-icons'
+    import TableroForm from './TableroForm.vue';
     /* add icons to the library */
     library.add(faPenToSquare)
+    library.add(faTrashCan) 
+
+
     
 
    
@@ -48,14 +52,10 @@ import TableroForm from './TableroForm.vue';
   
     //function   handleNewItem(texto,tabId,tabNombre) {
     function   handleNewItem(texto,tablero) {
-        console.log(tablero)
-      
-;          if (texto.value !== "" ) {
-               
-    
+        console.log(tablero)     
+            if (texto.value !== "" ) {              
                 tablero.items.push(
-                  {id:crypto.randomUUID(), elemento : texto.value}  
-               
+                  {id:crypto.randomUUID(), elemento : texto.value}                 
                 );
                 texto.value = "";
                 
@@ -81,9 +81,23 @@ import TableroForm from './TableroForm.vue';
         }
        
       
-    }    
+    }   
     
-    function onDrop(evt,board){
+    function deleteTablero(tablero){
+          if (confirm('¿ Estas seguro de borrar el tablero' + tablero.nombre + '?')) {  
+            console.log (tablero.id)         
+            const index = tableros.findIndex(t => t.id === tablero.id);
+  
+            // Si se encuentra el tablero, borrarlo
+            if (index !== -1) {
+                tableros.splice(index, 1);
+            }
+        
+          }
+
+    }
+    
+    function onDrop(evt,board,productoId){
         console.log('ondrop')
         const { boardId, itemId } = JSON.parse(evt.dataTransfer.getData("item")); // 
         console.log({ boardId, itemId });
@@ -94,7 +108,20 @@ import TableroForm from './TableroForm.vue';
         tableroOrigen.items = tableroOrigen.items.filter((i) => i.id !== productoOrigen.id);
         console.log(productoOrigen);
         console.log(board);
-        board.items.push(productoOrigen);
+        //board.items.push(productoOrigen); // Se carga al final
+        console.log('productoId' + productoId)
+        const indice = board.items.findIndex(p => p.id === productoId);
+        console.log(indice)
+        // concatenar 0-indice  + productoOrigen.id + idice +1 hasta el final
+        let parte1 = board.items.filter((i,index)=> index <=  indice);
+        console.log(parte1);
+        parte1.push(productoOrigen);
+        console.log(parte1);
+        const parte2 = board.items.filter((i,index)=> index >  indice);
+        console.log(parte2);
+        board.items = parte1.concat(parte2);
+      
+
 
     }
 
@@ -124,10 +151,6 @@ import TableroForm from './TableroForm.vue';
         localStorage.setItem('tableros', JSON.stringify(tableros));
     }
 
-    function edicionForm(){
-
-
-    }
 
    
     
@@ -144,24 +167,27 @@ import TableroForm from './TableroForm.vue';
     <button>Guardar Tableros</button>
     <BotonesTablero msg="Guardar Tableros"  @click="guardarTablero"/>
    <div class="tableros">
-    <div class="lista" v-for="tablero in tableros" >
+    <div class="lista" v-for="tablero in tableros"  v-bind:style = "{backgroundColor : tablero.color }">
         <div class="tablero">        
             <h1>{{ tablero.nombre  }} 
-                <font-awesome-icon  icon="fa-solid fa-pen-to-square"  id="formId" style="color: #288649;" @click="tablero.editar = !tablero.editar" />
+                <font-awesome-icon  icon="fa-solid fa-pen-to-square"  id="formId" @click="tablero.editar = !tablero.editar" />
+                <font-awesome-icon icon="fa-solid fa-trash-can"  @click="deleteTablero(tablero)"/>
             </h1>
             <TableroForm :tablero="tablero" v-show="tablero.editar" />
             
             <InputView @onNewItem="(item)=>handleNewItem(item,tablero)" />
             
             <div class="tags"
-                @drop="onDrop($event,tablero)"
+                
                 @dragover.prevent
-                @dragenter.prevent
-            
-            
+                @dragenter.prevent  
             >
+                <div v-if="tablero.items.length==0" draggable="true"  >No hay elementos</div>
                 <div class="tag" v-for="producto in tablero.items" 
-                draggable="true"   @dragstart="startDrag($event, tablero.id, producto.id)">
+                    draggable="true" 
+                    @dragstart="startDrag($event, tablero.id, producto.id)"
+                    @drop="onDrop($event,tablero,producto.id)"
+                >
                 {{ producto.elemento }} <button @click="() => deleteTag(producto.id,tablero)">X</button>
 
                 </div>
