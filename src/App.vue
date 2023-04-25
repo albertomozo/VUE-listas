@@ -17,6 +17,9 @@
         <li>
             <RouterLink to="/tableros"  active-class="active">listas</RouterLink>
        </li>
+       <li>
+            <RouterLink to="/materias"  active-class="active">materias</RouterLink>
+       </li>
     </ul>
  </nav>
  </header>
