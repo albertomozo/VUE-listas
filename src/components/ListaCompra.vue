@@ -108,18 +108,21 @@
         tableroOrigen.items = tableroOrigen.items.filter((i) => i.id !== productoOrigen.id);
         console.log(productoOrigen);
         console.log(board);
-        //board.items.push(productoOrigen); // Se carga al final
+       
         console.log('productoId' + productoId)
         const indice = board.items.findIndex(p => p.id === productoId);
         console.log(indice)
-        // concatenar 0-indice  + productoOrigen.id + idice +1 hasta el final
-        let parte1 = board.items.filter((i,index)=> index <=  indice);
-        console.log(parte1);
-        parte1.push(productoOrigen);
-        console.log(parte1);
-        const parte2 = board.items.filter((i,index)=> index >  indice);
-        console.log(parte2);
-        board.items = parte1.concat(parte2);
+        if (productoId == 0){ // Si no hay elementos hacemos push
+             board.items.push(productoOrigen); // Se carga al final
+        } else{
+            let parte1 = board.items.filter((i,index)=> index <=  indice);
+            console.log(parte1);
+            parte1.push(productoOrigen);
+            console.log(parte1);
+            const parte2 = board.items.filter((i,index)=> index >  indice);
+            console.log(parte2);
+            board.items = parte1.concat(parte2);
+        }
       
 
 
@@ -182,7 +185,7 @@
                 @dragover.prevent
                 @dragenter.prevent  
             >
-                <div v-if="tablero.items.length==0" draggable="true"  >No hay elementos</div>
+                <div v-if="tablero.items.length==0" draggable="true"  @drop="onDrop($event,tablero,0)" >No hay elementos</div>
                 <div class="tag" v-for="producto in tablero.items" 
                     draggable="true" 
                     @dragstart="startDrag($event, tablero.id, producto.id)"
