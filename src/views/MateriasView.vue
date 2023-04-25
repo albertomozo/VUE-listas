@@ -25,7 +25,7 @@ getData();
         
         <li v-for="materia in materias">
             
-            <router-link :to="`/materia/${materia.materia}`">{{
+            <router-link :to="`/materia/${materia.materia}`" >{{
                 materia.materia
             }}</router-link>
         </li>
